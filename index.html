@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Красивый сайт</title>
+
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            color: white;
+            overflow: hidden;
+        }
+
+        header {
+            position: fixed;
+            top: 20px;
+            left: 0;
+            width: 100%;
+            text-align: center;
+            z-index: 50;
+        }
+
+        header a {
+            margin: 0 15px;
+            font-weight: 600;
+            color: white;
+            cursor: pointer;
+            text-shadow: 0 0 5px black;
+            transition: .3s;
+        }
+
+        header a:hover {
+            color: #ffda74;
+        }
+
+        #wrap {
+            height: 100vh;
+            transition: transform .9s;
+        }
+
+        .section {
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 80px;
+            position: relative;
+        }
+
+        .section::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.45);
+            backdrop-filter: blur(2px);
+        }
+
+        .section>* {
+            position: relative;
+            z-index: 2;
+            animation: fadeUp 1s ease forwards;
+            opacity: 0;
+        }
+
+        @keyframes fadeUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* BACKGROUNDS */
+        .s1 {
+            background: url('https://images.unsplash.com/photo-1503264116251-35a269479413?w=1600')center/cover;
+        }
+
+        .s2 {
+            background: url('https://images.unsplash.com/photo-1496200186974-4293800e2c20?w=1600')center/cover;
+        }
+
+        .s3 {
+            background: url('https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?w=1600')center/cover;
+        }
+
+        .s4 {
+            background: url('https://images.unsplash.com/photo-1501785888041-af3ef285b470?w=1600')center/cover;
+        }
+
+        button {
+            padding: 14px 28px;
+            border: none;
+            border-radius: 12px;
+            background: #ffbb00;
+            color: black;
+            cursor: pointer;
+            font-size: 17px;
+            font-weight: 600;
+            margin-top: 25px;
+            transition: .3s;
+        }
+
+        button:hover {
+            background: #ffda6a;
+        }
+
+        /* ACCORDION */
+        .accordion {
+            display: flex;
+            width: 85%;
+            height: 380px;
+            gap: 16px;
+            margin-top: 30px;
+        }
+
+        .acc {
+            flex: 1;
+            position: relative;
+            border-radius: 18px;
+            background-size: cover;
+            background-position: center;
+            cursor: pointer;
+            transition: flex .7s, transform .7s;
+        }
+
+        .acc:hover {
+            transform: scale(1.03);
+        }
+
+        .acc.active {
+            flex: 3;
+        }
+
+        .acc .label {
+            position: absolute;
+            bottom: 0;
+            width: 100%;
+            padding: 18px;
+            text-align: center;
+            background: rgba(0, 0, 0, 0.45);
+            border-radius: 0 0 18px 18px;
+            font-size: 20px;
+            font-weight: 600;
+        }
+
+        /* VIDEO */
+        video {
+            width: 70%;
+            border-radius: 18px;
+            box-shadow: 0 0 40px rgba(0, 0, 0, .7);
+        }
+
+        /* MAP */
+        #map {
+            width: 75%;
+            height: 450px;
+            border-radius: 18px;
+            box-shadow: 0 0 40px rgba(0, 0, 0, .7);
+        }
+
+        /* Mobile */
+        @media(max-width:768px) {
+            .accordion {
+                flex-direction: column;
+                height: auto;
+            }
+
+            .acc {
+                height: 180px;
+            }
+
+            .acc.active {
+                height: 260px;
+                flex: none;
+            }
+
+            video,
+            #map {
+                width: 90%;
+            }
+
+            body {
+                overflow: auto;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <header>
+        <a data-to="0">Главная</a>
+        <a data-to="1">Галерея</a>
+        <a data-to="2">Видео</a>
+        <a data-to="3">Карта</a>
+    </header>
+
+    <div id="wrap">
+
+        <section class="section s1">
+            <h1 style="font-size:50px;font-weight:700;">Путешествие</h1>
+            <p style="font-size:20px;max-width:600px;">Дешевые билеты, хорошие путевки</p>
+            <button id="start">Начать</button>
+        </section>
+
+        <section class="section s2">
+            <h2 style="font-size:38px;">Галерея — Аккордеон</h2>
+            <div class="accordion" id="acc">
+                <div class="acc active"
+                    style="background-image:url('https://images.unsplash.com/photo-1519710164239-da123dc03ef4?w=1400');">
+                    <div class="label">офис</div>
+                </div>
+                <div class="acc"
+                    style="background-image:url('https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?w=1400');">
+                    <div class="label">дорога</div>
+                </div>
+                <div class="acc"
+                    style="background-image:url('https://images.unsplash.com/photo-1503264116251-35a269479413?w=1400');">
+                    <div class="label">небо</div>
+                </div>
+            </div>
+        </section>
+
+        <section class="section s3">
+            <h2 style="font-size:38px;">Видео</h2>
+            <video controls>
+                <source src="https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4">
+            </video>
+        </section>
+
+        <section class="section s4">
+            <h2 style="font-size:38px;">Карта (Астана)</h2>
+            <div id="map"></div>
+        </section>
+
+    </div>
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script>
+        let cur = 0, wrap = document.getElementById("wrap");
+        function go(i) { cur = Math.max(0, Math.min(3, i)); wrap.style.transform = `translateY(${-cur * 100}vh)`; }
+        window.addEventListener("wheel", e => go(cur + (e.deltaY > 0 ? 1 : -1)));
+        document.querySelectorAll("header a").forEach((a, i) => a.onclick = () => go(i));
+        document.getElementById("start").onclick = () => go(1);
+
+        document.querySelectorAll(".acc").forEach(el => {
+            el.onclick = () => {
+                document.querySelectorAll(".acc").forEach(x => x.classList.remove("active"));
+                el.classList.add("active");
+            };
+        });
+
+        let map = L.map("map").setView([51.169392, 71.449074], 13);
+        L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png").addTo(map);
+        L.marker([51.169392, 71.449074]).addTo(map).bindPopup("Астана, Кабанбай батыра 8");
+    </script>
+
+</body>
+
+</html>
